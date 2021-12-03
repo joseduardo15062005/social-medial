@@ -16,12 +16,11 @@ const thoughtController = {
     }
   },
   //POST Create Thought
-  async createThought({ params, body }, res) {
+  async createThought({ body }, res) {
     try {
-      const { userId } = params;
+      const { userId } = body;
       //create thought
       const thought = await Thought.create(body);
-      console.log("New Thought", thought);
 
       //find the user and add the thought to the user's thoughts array
       const dbUser = await User.findOneAndUpdate(
@@ -88,6 +87,42 @@ const thoughtController = {
     } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Error getting thoughts" });
+    }
+  },
+  //Create a new reaction
+  async createReaction({ params, body }, res) {
+    try {
+      const { thoughtId } = params;
+      const dbThought = await Thought.findOneAndUpdate(
+        { _id: thoughtId },
+        { $addToSet: { reactions: body } },
+        { new: true }
+      );
+      if (!dbThought) {
+        return res.status(404).json({ message: "Thought not found" });
+      }
+      res.json(dbThought);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Error creating reaction" });
+    }
+  },
+  //Delete a reaction
+  async deleteReaction({ params }, res) {
+    try {
+      const { thoughtId, reactionId } = params;
+      const dbThought = await Thought.findOneAndUpdate(
+        { _id: thoughtId },
+        { $pull: { reactions: { _id: reactionId } } },
+        { new: true }
+      );
+      if (!dbThought) {
+        return res.status(404).json({ message: "Thought not found" });
+      }
+      res.json(dbThought);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Error deleting reaction" });
     }
   },
 };
