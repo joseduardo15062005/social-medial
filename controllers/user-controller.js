@@ -49,6 +49,7 @@ const userController = {
   async createUser({ body }, res) {
     try {
       const user = await User.create(body);
+      console.log("New User", user);
       res.json(user);
     } catch (err) {
       console.log(err);
