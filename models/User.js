@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { shortDateFormat } = require("../utils/dateFormat");
 
 const UserSchema = new Schema(
   {
@@ -30,10 +31,11 @@ const UserSchema = new Schema(
     toJSON: {
       virtuals: true,
     },
-    id:false
+    id: false,
+    timestamps: true,
   }
 );
-
+UserSchema.virtual("createdDate").get(() => shortDateFormat(this.createAt));
 UserSchema.virtual("friendsCount").get(function () {
   return this.friends.length;
 });

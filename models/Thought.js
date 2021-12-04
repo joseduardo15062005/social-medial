@@ -14,11 +14,6 @@ const ReactionSchema = new Schema(
       minLength: 1,
       maxLength: 280,
     },
-    createAt: {
-      type: Date,
-      default: Date.now,
-      get: (createdAtVal) => shortDateFormat(createdAtVal),
-    },
     username: {
       type: String,
       required: true,
@@ -26,12 +21,15 @@ const ReactionSchema = new Schema(
   },
   {
     toJSON: {
-      getters: true,
       virtuals: true,
     },
     timestamps: true,
+    id: false,
+    _id: false,
   }
 );
+
+ReactionSchema.virtual("createdDate").get(() => shortDateFormat(this.createAt));
 
 // Thought Schema
 const ThoughtSchema = new Schema(
@@ -41,11 +39,6 @@ const ThoughtSchema = new Schema(
       required: true,
       minLength: 1,
       maxLength: 280,
-    },
-    createAt: {
-      type: Date,
-      default: Date.now,
-      get: (createdAtVal) => shortDateFormat(createdAtVal),
     },
     username: {
       type: String,
@@ -64,6 +57,7 @@ const ThoughtSchema = new Schema(
 );
 
 //virtuals
+ThoughtSchema.virtual("createdDate").get(() => shortDateFormat(this.createAt));
 
 const Thought = model("Thought", ThoughtSchema);
 
